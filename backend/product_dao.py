@@ -21,7 +21,7 @@ mocks = {
         'stock': 200,
         'thumbnail_url': 'https://i5.walmartimages.com/asr/bb8887af-420d-471d-a9db-e18010f6f369_1.225db54c3a0c677cb668f90b10b9737c.jpeg?odnHeight=450&odnWidth=450&odnBg=FFFFFF',
         'shelf_life': 120,
-        'active': True
+        'active': False
     },
     3: {
         'sku': 3,
@@ -42,8 +42,8 @@ class ProductDAO:
         print("Instantiating product dao")
 
     def get_all(self):
-        print(mocks)
-        return mocks
+        filtered = { sku: product for sku, product in mocks.items() if product.get("active") }
+        return filtered
 
     def get(self, sku):
         return mocks.get(sku)        
@@ -61,10 +61,10 @@ class ProductDAO:
     
     def deactivate(self, sku):
         product = product_dao.get(sku)
-        product.active = False
+        product["active"] = False
 
     def activate(self, sku):
         product = product_dao.get(sku)
-        product.active = True
+        product["active"] = True
 
 product_dao = ProductDAO()

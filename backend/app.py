@@ -35,7 +35,7 @@ def update_product(sku):
     return product
 
 # deactivate/activate
-@app.route('/products/<sku>', methods = ['PUT'])
+@app.route('/products/<int:sku>', methods = ['DELETE'])
 def deactivate_product_by_sku(sku):
     # if the product does not exist
     product = product_dao.get(sku)    
@@ -43,14 +43,9 @@ def deactivate_product_by_sku(sku):
         abort(404)
     
     # if the product does exist
-    else:
-        if product.active == True:
-            product = product_dao.deactivate(sku)
-            return ("deactivated", product)
-        else:
-            product = product_dao.activate(sku)
-            return ("activated", product)
-    
+    product_dao.deactivate(sku)
+    return "OKAY"
+       
 
 
 
