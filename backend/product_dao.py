@@ -1,5 +1,5 @@
 mocks = {
-    '1': {
+    1: {
         'sku': 1,
         'description': 'Peach box from Federiksburg, Texas',
         'brand': 'All Nature',
@@ -11,7 +11,7 @@ mocks = {
         'shelf_life': 7,
         'active': True
     },
-    '2': {
+    2: {
         'sku': 2,
         'description': 'Spaghetti box from Italy',
         'brand': 'Skinner',
@@ -23,7 +23,7 @@ mocks = {
         'shelf_life': 120,
         'active': True
     },
-    '3': {
+    3: {
         'sku': 3,
         'description': 'Potatos from Idaho',
         'brand': 'TaterLand',
@@ -42,23 +42,28 @@ class ProductDAO:
         print("Instantiating product dao")
 
     def get_all(self):
+        print(mocks)
         return mocks
 
     def get(self, sku):
         return mocks.get(sku)        
     
-    def create(product_configs):
-        mocks.append(product_configs)
-        return mocks
+    def create(self, product_configs = {}):
+        generated_sku = len(mocks) + 1
+        mocks[generated_sku] = { **product_configs, "sku": generated_sku }
+        return mocks.get(generated_sku)
     
-    def update(sku, product_configs):
-        pass
+    def update(self, sku, product_configs):
+        product = mocks.get(sku)
+        altered_product = {**product, **product_configs, "sku": sku}
+        mocks[sku] = altered_product;
+        return altered_product
     
-    def deactivate(sku):
+    def deactivate(self, sku):
         product = product_dao.get(sku)
         product.active = False
 
-    def activate(sku):
+    def activate(self, sku):
         product = product_dao.get(sku)
         product.active = True
 

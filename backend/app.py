@@ -1,4 +1,4 @@
-from flask import Flask, abort
+from flask import Flask, abort, request
 from product_dao import product_dao
 
 app = Flask(__name__)
@@ -11,7 +11,7 @@ def default():
 def get_all_products():
     return product_dao.get_all()
 
-@app.route("/products/<sku>")
+@app.route("/products/<int:sku>")
 def get_products_by_sku(sku):
     product = product_dao.get(sku)
     
@@ -23,30 +23,16 @@ def get_products_by_sku(sku):
 # create
 @app.route("/products", methods = ['POST'])
 def create_product():
-    new_product = req.body
-    # new_product = {
-    #             "6"{
-    #                'sku': "6",
-    #                'description': "something",
-    #                'brand': "fdsafdsafds",
-    #                'price': 43,
-    #                'weight': 34,
-    #                'category': "lala",
-    #                'stock': 13,
-    #                'thumbnail_url': "www.fdsfd.com",
-    #                'shelf_life': 45,
-    #                'active': True
-    #                 }
-    #             }
-    product = product_dao.create(new_product)
+    data = request.get_json()
+    product = product_dao.create(data)
     return product
 
 # update
-@app.route("/products/<sku>", methods = ['PUT'])
-def update_product():
-    product = update(sku, product_configs)
+@app.route("/products/<int:sku>", methods = ['PUT'])
+def update_product(sku):
+    changes = request.get_json()
+    product = product_dao.update(sku, changes)
     return product
-
 
 # deactivate/activate
 @app.route('/products/<sku>', methods = ['PUT'])
