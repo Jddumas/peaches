@@ -1,5 +1,6 @@
 from flask import Flask, abort, request
 from product_dao import product_dao
+from pydantic import ValidationError
 
 app = Flask(__name__)
 
@@ -24,15 +25,23 @@ def get_products_by_sku(sku):
 @app.route("/products", methods = ['POST'])
 def create_product():
     data = request.get_json()
-    product = product_dao.create(data)
-    return product
+    try:
+        product = product_dao.create(data)
+        return product
+    except ValidationError as e:
+        abort(400, str(e))
 
 # update
 @app.route("/products/<int:sku>", methods = ['PUT'])
 def update_product(sku):
     changes = request.get_json()
-    product = product_dao.update(sku, changes)
-    return product
+    # handle exceptions
+    try:
+        product = product_dao.update(sku, changes)
+        return product
+    except ValidationError as e:
+        abort(400, str(e))
+
 
 # deactivate/activate
 @app.route('/products/<int:sku>', methods = ['DELETE'])

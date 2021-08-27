@@ -1,3 +1,5 @@
+from entity.product import Product
+
 mocks = {
     1: {
         'sku': 1,
@@ -50,21 +52,40 @@ class ProductDAO:
     
     def create(self, product_configs = {}):
         generated_sku = len(mocks) + 1
-        mocks[generated_sku] = { **product_configs, "sku": generated_sku }
+        new_product_configs = { **product_configs, "sku": generated_sku }
+        new_product = Product(**new_product_configs) # may raise Validation Exception
+        mocks[generated_sku] = new_product.dict() # magic, don't care about it now
+
         return mocks.get(generated_sku)
     
+    # def update(self, sku, product_configs):
+    #     product = mocks.get(sku)
+    #     altered_product = {**product, **product_configs, "sku": sku}
+    #     mocks[sku] = altered_product;
+    #     return altered_product
+
     def update(self, sku, product_configs):
+        # get product
         product = mocks.get(sku)
-        altered_product = {**product, **product_configs, "sku": sku}
-        mocks[sku] = altered_product;
+        # calculate change, produce altered product
+        altered_product_configs = {**product, **product_configs, "sku": sku}
+        
+        # validate altered product
+        altered_product = Product(**altered_product_configs) # may raise Validation Exception
+        
+        # save altered product back into mocks
+        mocks[sku] = altered_product
+
+        # return altered product to controller
         return altered_product
+
     
     def deactivate(self, sku):
-        product = product_dao.get(sku)
+        product = self.get(sku)
         product["active"] = False
 
     def activate(self, sku):
-        product = product_dao.get(sku)
+        product = self.get(sku)
         product["active"] = True
 
 product_dao = ProductDAO()
