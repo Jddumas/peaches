@@ -55,21 +55,15 @@ class ProductDAO:
         new_product_configs = { **product_configs, "sku": generated_sku }
         new_product = Product(**new_product_configs) # may raise Validation Exception
         mocks[generated_sku] = new_product.dict() # magic, don't care about it now
-
         return mocks.get(generated_sku)
     
-    # def update(self, sku, product_configs):
-    #     product = mocks.get(sku)
-    #     altered_product = {**product, **product_configs, "sku": sku}
-    #     mocks[sku] = altered_product;
-    #     return altered_product
 
     def update(self, sku, product_configs):
         # get product
         product = mocks.get(sku)
         # calculate change, produce altered product
         altered_product_configs = {**product, **product_configs, "sku": sku}
-        
+
         # validate altered product
         altered_product = Product(**altered_product_configs) # may raise Validation Exception
         
