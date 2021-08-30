@@ -1,15 +1,15 @@
 from entity.item import Item
-from uuid import UUID4
+from uuid import uuid4
 
 mocks = {
-    4: {
+    "7260a6a7-38f0-4f7a-8343-90f1f152c35d": {
         'id': 4,
         'sku_id': 1,
         'reception_date': "7/4/2018",
         'removal_date': "",
         'state': "IN_INVENTORY"
     }
-    }
+}
 
 
 class ItemDAO:
@@ -25,26 +25,26 @@ class ItemDAO:
 
     
     def create(self, item_configs = {}):
-        generated_id = UUID4()
+        generated_id = uuid4()
         new_item_configs = {**item_configs, "id": generated_id}
         new_item = Item(**new_item_configs) # may raise Validation Exception
-        mocks[generated_id]= new_item.dict()
-        return mocks.get(generated_id)
+        mocks[str(generated_id)]= new_item.dict()
+        return mocks.get(str(generated_id))
 
     
     def update(self, id, item_configs):
         # get item
         item = mocks.get(id)
+        print("item", item)
         # calculate change, produce altered item
         altered_item_configs = {**item, **item_configs, "id": id}
-
         # validate altered item
-        altered_item = Item(**altered_item_configs) # may raise Validation Exception
+        altered_item = Item(**altered_item_configs).dict() # may raise Validation Exception
         
         # save altered item back into mocks
         mocks[id] = altered_item
 
-        # return altered item to controller
+        # return altered item to controller ###also bad
         return altered_item
     
     def ship(self, id):

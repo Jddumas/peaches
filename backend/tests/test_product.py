@@ -24,7 +24,7 @@ def test_it_validates_successfully():
 def test_it_check_shelf_life_non_negative():
     mock_product_config = {
         'sku': 1,
-        'description': 'Peach box from Federiksburg, Texas',
+        'description': 'Peach box from Fredericksburg, Texas',
         'brand': 'All Nature',
         'price': 3.00,
         'weight': 1.00,
@@ -33,7 +33,7 @@ def test_it_check_shelf_life_non_negative():
         'thumbnail_url': 'https://assets.wsimgs.com/wsimgs/rk/images/dp/wcm/202130/0050/img23o.jpg',
         'shelf_life': -7,
         'active': True
-        } # fill this in
+        } 
     with pytest.raises(ValidationError):
         Product(**mock_product_config)
 

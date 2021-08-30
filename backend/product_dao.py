@@ -20,7 +20,7 @@ mocks = {
         'price': 5.00,
         'weight': 3.00,
         'category': 'Pasta',
-        'stock': 200,
+        'stock':200,
         'thumbnail_url': 'https://i5.walmartimages.com/asr/bb8887af-420d-471d-a9db-e18010f6f369_1.225db54c3a0c677cb668f90b10b9737c.jpeg?odnHeight=450&odnWidth=450&odnBg=FFFFFF',
         'shelf_life': 120,
         'active': False
@@ -63,14 +63,13 @@ class ProductDAO:
         product = mocks.get(sku)
         # calculate change, produce altered product
         altered_product_configs = {**product, **product_configs, "sku": sku}
-
+        print(altered_product_configs)
         # validate altered product
-        altered_product = Product(**altered_product_configs) # may raise Validation Exception
-        
+        altered_product = Product(**altered_product_configs).dict() # may raise Validation Exception
         # save altered product back into mocks
         mocks[sku] = altered_product
 
-        # return altered product to controller
+        # return altered product to controller ###updated
         return altered_product
 
     

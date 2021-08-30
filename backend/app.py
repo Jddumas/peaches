@@ -62,7 +62,7 @@ def get_all_items():
     return item_dao.get_all()
 
 # get by id
-@app.route("/items/<int:id>")
+@app.route("/items/<id>")
 def get_items_by_id(id):
     item = item_dao.get(id)
     
@@ -82,18 +82,23 @@ def create_item():
         abort(400, str(e))
 
 # update
-@app.route("/items/<int:id>", methods = ['PUT'])
-def update_item(sku):
+@app.route("/items/<id>", methods = ['PUT'])
+def update_item(id):
     changes = request.get_json()
+
+    found_item = item_dao.get(id)
+    if found_item is None:
+        abort(404, f"Item {id} does not exist")
+        
     # handle exceptions
     try:
-        item = item_dao.update(sku, changes)
+        item = item_dao.update(id, changes)
         return item
     except ValidationError as e:
         abort(400, str(e))
 
 # ship
-@app.route('/items/shipped/<int:id>', methods = ['DELETE'])
+@app.route('/items/shipped/<id>', methods = ['DELETE'])
 def ship_item_by_id(id):
     # if the item does not exist
     item = item_dao.get(id)    
@@ -106,7 +111,7 @@ def ship_item_by_id(id):
 
 
 # expire
-@app.route('/items/expired/<int:id>', methods = ['DELETE'])
+@app.route('/items/expired/<id>', methods = ['DELETE'])
 def expire_item_by_id(id):
     # if the item does not exist
     item = item_dao.get(id)    
