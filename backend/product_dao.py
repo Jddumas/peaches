@@ -1,8 +1,13 @@
 from entity.product import Product
+from postgres import Postgres
+import sql
+
+db = Postgres()
 
 mocks = {
     1: {
         'sku': 1,
+        'name': 'Peaches',
         'description': 'Peach box from Federiksburg, Texas',
         'brand': 'All Nature',
         'price': 3.00,
@@ -15,6 +20,7 @@ mocks = {
     },
     2: {
         'sku': 2,
+        'name': 'Spaghetti',
         'description': 'Spaghetti box from Italy',
         'brand': 'Skinner',
         'price': 5.00,
@@ -27,6 +33,7 @@ mocks = {
     },
     3: {
         'sku': 3,
+        'name': 'Potato',
         'description': 'Potatos from Idaho',
         'brand': 'TaterLand',
         'price':6.00,
@@ -44,18 +51,32 @@ class ProductDAO:
         print("Instantiating product dao")
 
     def get_all(self):
-        filtered = { sku: product for sku, product in mocks.items() if product.get("active") }
-        return filtered
+        # TODO: handle db exception
+        rows = db.query(sql.SQL_GET_PRODUCTS_BY_ACTIVE) # rows is array of tuple, that can be accessed in a manner like dictionary (but it's not dict)
+        # we cannot return this to flask controller, so convert this to a model. We use Product.from_db to convert each row into a Product.
+        products = [ Product.from_db(row) for row in rows ] # conversion using list comprehension
+
+        # The next 3 lines convert the list of product to a dictionary of product dict. Flask cannot accept list, only dict or string, or number
+        product_dicts = {}
+        for product in products:
+            product_dicts[product.sku] = product.dict() # flask cannot send Product typed object, so convert that to dict
+
+        return product_dicts
+
 
     def get(self, sku):
-        return mocks.get(sku)        
+        # TODO: handle db exception
+        rows = db.query(sql.SQL_GET_PRODUCT_BY_SKU, { "sku": sku })
+        product = Product.from_db(rows[0]) # only 1 result, because select by SKU
+        return product.dict()
+
     
     def create(self, product_configs = {}):
-        generated_sku = len(mocks) + 1
-        new_product_configs = { **product_configs, "sku": generated_sku }
-        new_product = Product(**new_product_configs) # may raise Validation Exception
-        mocks[generated_sku] = new_product.dict() # magic, don't care about it now
-        return mocks.get(generated_sku)
+        # TODO: handle db exception
+        row = db.update(sql.SQL_CREATE_PRODUCT, product_configs)
+        # convert to Product, then to dict
+        product = Product.from_db(row)
+        return product.dict()
     
 
     def update(self, sku, product_configs):

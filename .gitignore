@@ -1,2 +1,4 @@
 backend/venv
+backend/data
 **.pyc
+.pytest_cache
