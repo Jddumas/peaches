@@ -1,6 +1,7 @@
 from entity.product import Product
 from pydantic import ValidationError
 import pytest
+import product_dao as productDAO
 
 def test_it_validates_successfully():
     mock_product_config =  {
@@ -64,3 +65,4 @@ def test_it_check_non_negative():
         Product(**mock_product_config)
     except ValidationError as e:
         assert len(e.errors()) == 4
+

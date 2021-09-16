@@ -11,16 +11,18 @@ def default():
 
 @app.route("/products")
 def get_all_products():
-    return product_dao.get_all()
+    try:
+        return product_dao.get_all()     
+    except Exception as error:
+        abort(400, str(error))
 
 @app.route("/products/<int:sku>")
 def get_products_by_sku(sku):
-    product = product_dao.get(sku)
-    
-    if product is None:
-        abort(404)
-    else:
-        return product
+    try:
+        product = product_dao.get(sku)
+        return product        
+    except Exception as error:
+        abort(400, str(error))
 
 # create
 @app.route("/products", methods = ['POST'])
@@ -29,7 +31,7 @@ def create_product():
     try:
         product = product_dao.create(data)
         return product
-    except ValidationError as e:
+    except Exception as e:
         abort(400, str(e))
 
 # update
@@ -40,7 +42,7 @@ def update_product(sku):
     try:
         product = product_dao.update(sku, changes)
         return product
-    except ValidationError as e:
+    except Exception as e:
         abort(400, str(e))
 
 # deactivate/activate
