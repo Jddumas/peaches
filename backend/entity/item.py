@@ -11,8 +11,19 @@ class FulfilmentState(str, Enum):
     SHIPPED="SHIPPED"
 
 class Item(BaseModel):
-        id: UUID
-        sku_id: PositiveInt
-        reception_date: str
-        removal_date: Optional[str]  # should be optional
-        state: FulfilmentState
+    id: UUID
+    sku_id: PositiveInt
+    reception_date: str
+    removal_date: Optional[str]  # should be optional
+    state: FulfilmentState
+
+    @staticmethod
+    def from_db(row):
+        print(row)
+        return Item(
+            id=row["id"],
+            sku_id=row["sku_id"],
+            reception_date=row["reception_date"],
+            removal_date=row["removal_date"],
+            state=row["state"]
+        )

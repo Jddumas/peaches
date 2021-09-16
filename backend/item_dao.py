@@ -1,19 +1,9 @@
 from entity.item import Item
-from uuid import uuid4
+from uuid import uuid4, UUID
 from postgres import Postgres
 import sql
 
 db = Postgres()
-
-mocks = {
-    "7260a6a7-38f0-4f7a-8343-90f1f152c35d": {
-        'id': 4,
-        'sku_id': 1,
-        'reception_date': "7/4/2018",
-        'removal_date': "",
-        'state': "IN_INVENTORY"
-    }
-}
 
 class ItemDAO:
     def __init__(self):
@@ -24,24 +14,24 @@ class ItemDAO:
         # old
         # filtered = { id: item for id, item in mocks.items() }
         # return filtered
-
         # new
         rows = db.query(sql.SQL_GET_ALL_ITEMS)
         items = [ Item.from_db(row) for row in rows ] # conversion using list comprehension
-
+        
         # The next 3 lines convert the list of product to a dictionary of item dict. Flask cannot accept list, only dict or string, or number
         item_dicts = {}
         for item in items:
-            item_dicts[item.id] = item.dict() # flask cannot send Item typed object, so convert that to dict
+            item_dicts[str(item.id)] = item.dict() # flask cannot send Item typed object, so convert that to dict
         return item_dicts
     
     # done?
     def get(self, id):
         # old
         # return mocks.get(id)
-
+        print("id", id)
         # new
-        rows = db.query(sql.SQL_GET_ITEM_BY_ID, { "id": id })        
+        rows = db.query(sql.SQL_GET_ITEM_BY_ID, { "id": id })  
+        print(rows)      
         item = Item.from_db(rows[0]) # only 1 result, because select by SKU
         return item.dict()
 
@@ -55,7 +45,10 @@ class ItemDAO:
         # return mocks.get(str(generated_id))
 
         # new
-        item = Item(**item_configs);
+        generated_id = uuid4()
+        item = Item(**item_configs, id=generated_id);
+
+        print(item.dict())
         row = db.update(sql.SQL_CREATE_ITEM, item.dict())
         # convert to Item, then to dict
         item_from_db = Item.from_db(row)
