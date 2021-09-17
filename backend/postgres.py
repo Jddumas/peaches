@@ -1,5 +1,5 @@
 import psycopg2
-from psycopg2.extras import DictCursor
+from psycopg2.extras import DictCursor, register_uuid
 
 class Postgres():
     def __init__(self):
@@ -10,6 +10,8 @@ class Postgres():
         self.conn = psycopg2.connect("host=localhost dbname=testing_db user=postgres password=postgres", cursor_factory=DictCursor)
     
     def query(self, sql, values = {}): # may throw DbException
+        register_uuid()
+        print(sql, values)
         # with is a pythonic feature called "context manager"
         # conn.cursor() opens a new connection
         with self.conn.cursor() as curs:
@@ -21,6 +23,7 @@ class Postgres():
         # however, using context manager feature, it's automatically closed
         
     def update(self, sql, values = {}): # may throw DbException
+        register_uuid()
         with self.conn.cursor() as curs:
             curs.execute(sql, values)
             row = curs.fetchone() # our insertion query only return 1 row, so we use fetchone.
