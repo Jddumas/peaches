@@ -32,6 +32,11 @@ To start the server, first activate the virtual python environment.
 $ source backend/venv/bin/activate
 ```
 
+Then install the dependencies (if you haven't)
+```sh
+$ pip install --requirement requirements.txt
+```
+
 Then start flask in the same terminal.
 ```sh
 flask run
