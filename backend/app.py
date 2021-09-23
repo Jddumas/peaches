@@ -1,41 +1,55 @@
-from flask import Flask, abort, request
+from flask import Flask, abort, request, json, jsonify
 from product_dao import product_dao
 from item_dao import item_dao
 from pydantic import ValidationError
+from werkzeug.exceptions import HTTPException
+
 
 app = Flask(__name__)
+
 
 @app.route("/")
 def default():
     return "Hello world"
 
+
 @app.route("/products")
 def get_all_products():
     try:
-        return product_dao.get_all()     
+        return product_dao.get_all()
     except Exception as error:
-        abort(400, str(error))
+        abort(400, str(error), error.__traceback__)
 
-@app.route("/products/<int:sku>")
+
+@app.route("/products/<uuid:sku>")
 def get_products_by_sku(sku):
     try:
         product = product_dao.get(sku)
-        return product        
+        if product is not None:
+            return product
+        else:
+            return "Not found", 404
     except Exception as error:
         abort(400, str(error))
 
 # create
-@app.route("/products", methods = ['POST'])
+
+
+@app.route("/products", methods=['POST'])
 def create_product():
     data = request.get_json()
     try:
         product = product_dao.create(data)
         return product
-    except Exception as e:
-        abort(400, str(e))
+    except ValidationError as validation_error:
+        abort(400, str(validation_error))
+    except Exception as error:
+        abort(400, str(error), error.__traceback__)
 
 # update
-@app.route("/products/<int:sku>", methods = ['PUT'])
+
+
+@ app.route("/products/<uuid:sku>", methods=['PUT'])
 def update_product(sku):
     changes = request.get_json()
     # handle exceptions
@@ -46,35 +60,41 @@ def update_product(sku):
         abort(400, str(e))
 
 # deactivate/activate
-@app.route('/products/<int:sku>', methods = ['DELETE'])
+
+
+@ app.route('/products/<uuid:sku>', methods=['DELETE'])
 def deactivate_product_by_sku(sku):
     # if the product does not exist
-    product = product_dao.get(sku)    
+    product = product_dao.get(sku)
     if product is None:
         abort(404)
-    
+
     # if the product does exist
     product_dao.deactivate(sku)
     return "OKAY"
 
 # items
-#get all
-@app.route("/items")
+# get all
+
+
+@ app.route("/items")
 def get_all_items():
     return item_dao.get_all()
 
-# get by id
-@app.route("/items/<id>")
+
+@ app.route("/items/<id>")
 def get_items_by_id(id):
     item = item_dao.get(id)
-    
+
     if item is None:
         abort(404)
     else:
         return item
 
 # create
-@app.route("/items", methods = ['POST'])
+
+
+@ app.route("/items", methods=['POST'])
 def create_item():
     data = request.get_json()
     try:
@@ -84,14 +104,16 @@ def create_item():
         abort(400, str(e))
 
 # update
-@app.route("/items/<id>", methods = ['PUT'])
+
+
+@ app.route("/items/<id>", methods=['PUT'])
 def update_item(id):
     changes = request.get_json()
 
     found_item = item_dao.get(id)
     if found_item is None:
         abort(404, f"Item {id} does not exist")
-        
+
     # handle exceptions
     try:
         item = item_dao.update(id, changes)
@@ -100,30 +122,28 @@ def update_item(id):
         abort(400, str(e))
 
 # ship
-@app.route('/items/shipped/<id>', methods = ['DELETE'])
+
+
+@ app.route('/items/shipped/<id>', methods=['DELETE'])
 def ship_item_by_id(id):
     # if the item does not exist
-    item = item_dao.get(id)    
+    item = item_dao.get(id)
     if item is None:
         abort(404)
-    
+
     # if the item does exist
     item_dao.ship(id)
     return "SHIPPED OKAY"
 
 
 # expire
-@app.route('/items/expired/<id>', methods = ['DELETE'])
+@ app.route('/items/expired/<id>', methods=['DELETE'])
 def expire_item_by_id(id):
     # if the item does not exist
-    item = item_dao.get(id)    
+    item = item_dao.get(id)
     if item is None:
         abort(404)
-    
+
     # if the item does exist
     item_dao.expire(id)
     return "EXPIRED OKAY"
-       
-
-
-
