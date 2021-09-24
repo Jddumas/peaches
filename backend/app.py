@@ -1,17 +1,22 @@
-from flask import Flask, abort, request, json, jsonify
-from product_dao import product_dao
-from item_dao import item_dao
+from flask import Flask, abort, request, json, jsonify, current_app, g
+from postgres import Postgres
+from product_dao import ProductDAO
+from item_dao import ItemDAO
 from pydantic import ValidationError
 from werkzeug.exceptions import HTTPException
-
+import atexit
 
 app = Flask(__name__)
 
+db = Postgres()
+product_dao = ProductDAO(db)
+item_dao = ItemDAO(db)
+
+atexit.register(db.close)
 
 @app.route("/")
 def default():
     return "Hello world"
-
 
 @app.route("/products")
 def get_all_products():
@@ -19,7 +24,6 @@ def get_all_products():
         return product_dao.get_all()
     except Exception as error:
         abort(400, str(error), error.__traceback__)
-
 
 @app.route("/products/<uuid:sku>")
 def get_products_by_sku(sku):
@@ -31,8 +35,6 @@ def get_products_by_sku(sku):
             return "Not found", 404
     except Exception as error:
         abort(400, str(error))
-
-# create
 
 
 @app.route("/products", methods=['POST'])
@@ -135,8 +137,6 @@ def ship_item_by_id(id):
     item_dao.ship(id)
     return "SHIPPED OKAY"
 
-
-# expire
 @ app.route('/items/expired/<id>', methods=['DELETE'])
 def expire_item_by_id(id):
     # if the item does not exist

@@ -1,12 +1,22 @@
 version: "3.8"
 services:
+  backend:
+    build: .
+    env_file:
+      - .env
+    volumes:
+      - .:/app/
+    ports:
+      - 5000:5000
+    depends_on:
+      - db
   db:
     image: postgres:latest
     container_name: postgresdb
     env_file:
       - .env
     volumes:
-      - ./data/db:/var/lib/postgresql/data
+      - ~/.data/db:/var/lib/postgresql/data
     ports:
       - ${POSTGRES_PORT}:${POSTGRES_PORT}
     environment:

@@ -1,16 +1,12 @@
 from entity.item import Item
-from postgres import Postgres
 from sql import SQL
 
-db = Postgres()
-
-
 class ItemDAO:
-    def __init__(self):
-        print("Instantiating Item DAO")
+    def __init__(self, db):
+        self.db = db;
 
     def get_all(self):
-        rows = db.query(SQL.ITEM.GET_ALL)
+        rows = self.db.query(SQL.ITEM.GET_ALL)
         # conversion using list comprehension
         items = [Item.from_db(row) for row in rows]
 
@@ -22,13 +18,13 @@ class ItemDAO:
         return item_dicts
 
     def get(self, id):
-        rows = db.query(SQL.ITEM.GET_BY_ID, {"id": id})
+        rows = self.db.query(SQL.ITEM.GET_BY_ID, {"id": id})
         item = Item.from_db(rows[0])  # only 1 result, because select by SKU
         return item.dict()
 
     def create(self, item_configs={}):
         item = Item(**item_configs)
-        row = db.update(SQL.ITEM.INSERT, item.dict())
+        row = self.db.update(SQL.ITEM.INSERT, item.dict())
         # convert to Item, then to dict
         item_from_db = Item.from_db(row)
         return item_from_db.dict()
@@ -48,6 +44,3 @@ class ItemDAO:
     def expire(self, id):
         item = self.update(id, {"state": "EXPIRED"})
         return item
-
-
-item_dao = ItemDAO()
