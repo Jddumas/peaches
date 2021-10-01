@@ -4,6 +4,7 @@ from dotenv import load_dotenv
 from os import environ
 load_dotenv()
 
+
 class Postgres():
     def __init__(self):
         # instantiate a connection to database
@@ -12,11 +13,11 @@ class Postgres():
         # DictCursor is a type of cursor that allow accessing data by column name, like result["name"]; result["brand"]
         print("New db connection!")
         self.conn = psycopg2.connect(
-            f"host=db dbname={environ.get('POSTGRES_DB')} user={environ.get('POSTGRES_USER')} password={environ.get('POSTGRES_PASSWORD')}", cursor_factory=DictCursor)
+            f"host={environ.get('POSTGRES_HOST')} dbname={environ.get('POSTGRES_DB')} user={environ.get('POSTGRES_USER')} password={environ.get('POSTGRES_PASSWORD')}", cursor_factory=DictCursor)
 
     def query(self, sql, values={}):  # may throw DbException
         register_uuid()
-        
+
         # with is a pythonic feature called "context manager"
         # conn.cursor() opens a new connection
         with self.conn:
@@ -31,15 +32,15 @@ class Postgres():
         # however, using context manager feature, it's automatically closed
 
     def update(self, sql, values={}):  # may throw DbException
-        
+
         register_uuid()
         with self.conn:
             with self.conn.cursor() as curs:
                 curs.execute(sql, values)
-                # our insertion query only return 1 row, so we use fetchone. 
+                # our insertion query only return 1 row, so we use fetchone.
                 row = curs.fetchone()
                 return row
-    
+
     def close(self):
         print("Closing db connection")
         self.conn.close()
