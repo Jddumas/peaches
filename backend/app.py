@@ -14,9 +14,11 @@ item_dao = ItemDAO(db)
 
 atexit.register(db.close)
 
+
 @app.route("/")
 def default():
     return "Hello world"
+
 
 @app.route("/products")
 def get_all_products():
@@ -24,6 +26,7 @@ def get_all_products():
         return product_dao.get_all()
     except Exception as error:
         abort(400, str(error), error.__traceback__)
+
 
 @app.route("/products/<uuid:sku>")
 def get_products_by_sku(sku):
@@ -51,7 +54,7 @@ def create_product():
 # update
 
 
-@ app.route("/products/<uuid:sku>", methods=['PUT'])
+@app.route("/products/<uuid:sku>", methods=['PUT'])
 def update_product(sku):
     changes = request.get_json()
     # handle exceptions
@@ -61,10 +64,11 @@ def update_product(sku):
     except Exception as e:
         abort(400, str(e))
 
+
 # deactivate/activate
 
 
-@ app.route('/products/<uuid:sku>', methods=['DELETE'])
+@app.route('/products/<uuid:sku>', methods=['DELETE'])
 def deactivate_product_by_sku(sku):
     # if the product does not exist
     product = product_dao.get(sku)
@@ -79,12 +83,12 @@ def deactivate_product_by_sku(sku):
 # get all
 
 
-@ app.route("/items")
+@app.route("/items")
 def get_all_items():
     return item_dao.get_all()
 
 
-@ app.route("/items/<id>")
+@app.route("/items/<id>")
 def get_items_by_id(id):
     item = item_dao.get(id)
 
@@ -96,7 +100,7 @@ def get_items_by_id(id):
 # create
 
 
-@ app.route("/items", methods=['POST'])
+@app.route("/items", methods=['POST'])
 def create_item():
     data = request.get_json()
     try:
@@ -108,7 +112,7 @@ def create_item():
 # update
 
 
-@ app.route("/items/<id>", methods=['PUT'])
+@app.route("/items/<id>", methods=['PUT'])
 def update_item(id):
     changes = request.get_json()
 
@@ -126,7 +130,7 @@ def update_item(id):
 # ship
 
 
-@ app.route('/items/shipped/<id>', methods=['DELETE'])
+@app.route('/items/shipped/<id>', methods=['DELETE'])
 def ship_item_by_id(id):
     # if the item does not exist
     item = item_dao.get(id)
@@ -137,7 +141,8 @@ def ship_item_by_id(id):
     item_dao.ship(id)
     return "SHIPPED OKAY"
 
-@ app.route('/items/expired/<id>', methods=['DELETE'])
+
+@app.route('/items/expired/<id>', methods=['DELETE'])
 def expire_item_by_id(id):
     # if the item does not exist
     item = item_dao.get(id)
