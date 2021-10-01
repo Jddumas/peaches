@@ -1,7 +1,7 @@
 import React from "react";
 import { Product } from "../entity";
 import { useParams } from "react-router-dom";
-import { mockProducts } from "./Products";
+import { mockProducts } from "../mocks/mock_data";
 
 const ProductDetail: React.FunctionComponent = () => {
   let { sku } = useParams() as unknown as { sku: number };
