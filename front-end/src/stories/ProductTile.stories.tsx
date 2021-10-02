@@ -8,11 +8,8 @@ export default {
   component: ProductTile,
 } as ComponentMeta<typeof ProductTile>;
 
-const Template: ComponentStory<typeof ProductTile> = (args) => (
-  <ProductTile {...args} />
-);
+// const Template: ComponentStory<typeof ProductTile> = (args) => (
+//   <ProductTile {...args} />
+// );
 
-export const Main = Template.bind({});
-Main.args = {
-  product: mockProducts.pop(),
-};
+export const Primary = () => <ProductTile product={mockProducts[0]} />;
