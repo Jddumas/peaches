@@ -20,7 +20,7 @@ def default():
     return "Hello world"
 
 
-@app.route("/products")
+@app.route("/api/products")
 def get_all_products():
     try:
         return product_dao.get_all()
@@ -28,7 +28,7 @@ def get_all_products():
         abort(400, str(error), error.__traceback__)
 
 
-@app.route("/products/<uuid:sku>")
+@app.route("/api/products/<uuid:sku>")
 def get_products_by_sku(sku):
     try:
         product = product_dao.get(sku)
@@ -40,7 +40,7 @@ def get_products_by_sku(sku):
         abort(400, str(error))
 
 
-@app.route("/products", methods=['POST'])
+@app.route("/api/products", methods=['POST'])
 def create_product():
     data = request.get_json()
     try:
@@ -54,7 +54,7 @@ def create_product():
 # update
 
 
-@app.route("/products/<uuid:sku>", methods=['PUT'])
+@app.route("/api/products/<uuid:sku>", methods=['PUT'])
 def update_product(sku):
     changes = request.get_json()
     # handle exceptions
@@ -68,7 +68,7 @@ def update_product(sku):
 # deactivate/activate
 
 
-@app.route('/products/<uuid:sku>', methods=['DELETE'])
+@app.route('/api/products/<uuid:sku>', methods=['DELETE'])
 def deactivate_product_by_sku(sku):
     # if the product does not exist
     product = product_dao.get(sku)
@@ -83,12 +83,12 @@ def deactivate_product_by_sku(sku):
 # get all
 
 
-@app.route("/items")
+@app.route("/api/items")
 def get_all_items():
     return item_dao.get_all()
 
 
-@app.route("/items/<id>")
+@app.route("/api/items/<id>")
 def get_items_by_id(id):
     item = item_dao.get(id)
 
@@ -100,7 +100,7 @@ def get_items_by_id(id):
 # create
 
 
-@app.route("/items", methods=['POST'])
+@app.route("/api/items", methods=['POST'])
 def create_item():
     data = request.get_json()
     try:
@@ -112,7 +112,7 @@ def create_item():
 # update
 
 
-@app.route("/items/<id>", methods=['PUT'])
+@app.route("/api/items/<id>", methods=['PUT'])
 def update_item(id):
     changes = request.get_json()
 

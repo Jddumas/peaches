@@ -3,9 +3,7 @@ import { Product } from "../entity";
 import { Link } from "react-router-dom";
 
 type ProductTileProps = { product: Product };
-const ProductTile: React.FunctionComponent<ProductTileProps> = ({
-  product,
-}) => (
+const ProductTile: React.VFC<ProductTileProps> = ({ product }) => (
   <div className="card">
     <div className="card-image">
       <figure className="image">
