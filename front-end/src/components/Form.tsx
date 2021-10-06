@@ -1,4 +1,4 @@
-import React, { ReactElement, ReactNode } from "react";
+import React, { ReactElement, useEffect } from "react";
 import { useForm } from "react-hook-form";
 
 type ValidatorFn = (value: string | number) => boolean;
@@ -6,8 +6,9 @@ type FormProps<T> = {
   defaultValue?: T;
   fieldConfigs: FieldConfig<keyof T>[];
   onSubmit: VoidFunction;
+  onFieldsBlur?: (value: any, name: keyof T, type: string | number) => void;
 };
-type FieldConfig<IK> = {
+export type FieldConfig<IK> = {
   label: string;
   inputType: "text" | "number" | "multiline-text";
   placeHolder?: string;
@@ -15,7 +16,7 @@ type FieldConfig<IK> = {
   constraints?: FieldConstraints;
   helpTexts?: HelpTexts;
 };
-type FieldConstraints = {
+export type FieldConstraints = {
   required?: boolean;
   min?: number;
   max?: number;
@@ -64,7 +65,16 @@ function Form<T>(props: FormProps<T>): ReactElement {
     register,
     handleSubmit,
     formState: { errors },
+    watch,
   } = useForm({ defaultValues: props.defaultValue, mode: "onBlur" });
+
+  useEffect(() => {
+    const subscription = watch(
+      (value, { name, type }) =>
+        props.onFieldsBlur && props.onFieldsBlur(value, name, type)
+    );
+    return () => subscription.unsubscribe();
+  }, [watch]);
 
   const enrichedFieldConfigs = props.fieldConfigs.map((f) =>
     makeDefaultHelpText(f)
