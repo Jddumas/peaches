@@ -1,8 +1,8 @@
 import React from "react";
-import ProductTile from "../components/ProductTile";
-import { mockProducts } from "../mocks/mock_data";
+import ProductTable from "../components/ProductTable";
 import { useRecoilValueLoadable } from "recoil";
 import { productsAtom } from "../recoil/productAtoms";
+import { Product } from "../entity";
 
 const ProductPage: React.FunctionComponent = () => {
   const getAllProductCall = useRecoilValueLoadable(productsAtom);
@@ -14,20 +14,28 @@ const ProductPage: React.FunctionComponent = () => {
       <div className="has-text-danger"> {getAllProductCall.contents} </div>
     );
   }
-
   const productListing = Object.values(getAllProductCall.contents);
 
+  if (productListing.length < 1) {
+    return (
+      <section className="section">
+        <p>No products</p>
+      </section>
+    );
+  }
+
+  const headers = Object.keys(productListing[0]) as Array<keyof Product>;
   return (
     <section className="section">
       <p className="title">This is product page</p>
       <p className="subtitle">Under construction, coming</p>
 
-      <div className="columns is-multiline">
-        {productListing.map((p) => (
-          <div className="column is-3">
-            <ProductTile product={p} />
-          </div>
-        ))}
+      <div>
+        <ProductTable
+          products={productListing}
+          headers={headers}
+          onActionClicked={(p) => alert(`You've clicked ${p.sku}`)}
+        ></ProductTable>
       </div>
     </section>
   );

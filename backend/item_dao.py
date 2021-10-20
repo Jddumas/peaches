@@ -35,7 +35,7 @@ class ItemDAO:
             raise Exception("not found")
         altered_item_configs = {**item, **item_configs, "id": id}
         Item(**altered_item_configs)  # FOR VALIDATION
-        db.update(SQL.ITEM.UPDATE, altered_item_configs)
+        self.db.update(SQL.ITEM.UPDATE, altered_item_configs)
 
     def ship(self, id):
         item = self.update(id, {"state": "SHIPPED"})
